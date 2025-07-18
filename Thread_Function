@@ -1,0 +1,69 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+//run() -- to execute program of thread 
+//sleep() -- to sleep particular thread
+//start() -- to start thread
+//join() -- wait until particular thread completes its execution
+//interrupt() -- intrupt the thread
+//yield() -- to ive chance to other thread as well
+//user thread -- thread which is working like t, t2,t3
+//daemon thread -- background thread
+//setDaemon() -- once main method execute, jvm shut down irrespective of daemon thread 
+
+public class Main
+{
+	public static void main(String[] args) throws InterruptedException{
+	    
+	    MyThread t = new MyThread("High_Priority");
+	    MyThread t2 = new MyThread("Medium_Priority");
+	    MyThread t3 = new MyThread("Low_Priority");
+	    System.out.println(t.getPriority() + " " + t2.getPriority() + " " + t3.getPriority());
+	    
+	    t.setPriority(Thread.MAX_PRIORITY);
+	    t2.setPriority(Thread.NORM_PRIORITY);
+	    t3.setPriority(Thread.MIN_PRIORITY);
+	    
+	    t.start();
+	    t.interrupt();
+	     t2.setDaemon(true);
+	    t3.setDaemon(true);
+	    t2.start();
+	    t3.start();
+	   
+	    
+	}
+}
+
+class MyThread extends Thread{
+    
+    public MyThread(String name){
+        super(name);
+    }
+    
+    public void run(){
+        
+       for(int i= 0; i<2; i++){
+           Thread.yield();
+           for(int j = 0; j<10; j++){
+                System.out.println(Thread.currentThread().getName() + " is running..." + j);
+                Thread.yield();
+           }
+          
+       
+       System.out.println(Thread.currentThread().getName() + " - Priority - " + Thread.currentThread().getPriority());
+    
+        try{
+            Thread.sleep(10);
+        }catch(InterruptedException e){
+            System.out.println("Interrupt occurs...");
+        }
+       } 
+    }
+}
+
