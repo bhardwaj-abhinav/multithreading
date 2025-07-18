@@ -1,0 +1,36 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+public class Main
+{
+	public static void main(String[] args) throws InterruptedException{
+	    
+	    Sample sam = new Sample();
+	    Thread t = new Thread(sam);
+	    System.out.println(t.getState()); //NEW
+	    t.start();
+	    System.out.println(t.getState()); //RUNNABLE
+        System.out.println(Thread.currentThread().getState()); //RUNNING = RUNNABLE
+        Thread.sleep(100);
+        System.out.println(t.getState()); //TIMED_WAITING (WAITING state);
+        t.join(); //wait until t thread gets completed
+        System.out.println(t.getState()); //TERMINATED
+	 
+	}
+}
+
+class Sample implements Runnable{
+    public void run(){
+        System.out.println("Running........");
+        try{
+            Thread.sleep(2000);
+        }catch (InterruptedException e){
+            System.out.println(e);
+        }
+    }
+}
