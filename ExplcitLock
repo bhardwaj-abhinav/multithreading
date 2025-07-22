@@ -1,0 +1,75 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+
+//explicit lock ------
+//lock() --- same as synchronized
+//tryLock() --- accessing for lock
+//unlock() --- unlock the access
+
+import java.util.concurrent.*;
+import java.util.concurrent.locks.*;
+public class Main
+{
+	public static void main(String[] args) {
+	    BankApp ba = new BankApp();
+	    
+	    Runnable r = new Runnable(){
+	        public void run(){
+	            ba.withdraw(50);
+	        }
+	       };
+	    Thread t = new Thread(r, "Thread 1");
+	    Thread t2 = new Thread(r, "Thread 2");
+	    t.start();
+	    t2.start();
+	    t.interrupt();
+    }
+}
+
+class BankApp{
+    int balance = 100;
+    
+    Lock lock = new ReentrantLock();
+    
+    public void withdraw(int amount){
+        
+        try{
+            if(lock.tryLock(2000, TimeUnit.MILLISECONDS)){
+              
+              if(balance>=amount){
+                try{
+                System.out.println(Thread.currentThread().getName() + " attempting to withdraw " + amount);
+                Thread.sleep(2000);
+                balance = balance - amount;
+                System.out.println(Thread.currentThread().getName() + " completed withdraw of " + amount);
+                 }
+                catch(InterruptedException e){
+                    Thread.currentThread().interrupt();
+                }
+                finally{
+                    lock.unlock();  
+                        }
+              }
+              else{
+            System.out.println(Thread.currentThread().getName() + " insufficient amount.");
+             }
+            }
+          else{
+              System.out.println(Thread.currentThread().getName() + " could not aquire the lock");
+          }  
+            
+        }catch(InterruptedException e){
+            Thread.currentThread().interrupt();
+        }
+        if (Thread.currentThread().isInterrupted()){
+            System.out.println("Thread gets interrupted.........");
+        }
+       
+    }
+}
