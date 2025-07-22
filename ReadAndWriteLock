@@ -1,0 +1,70 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+import java.util.concurrent.*;
+import java.util.concurrent.locks.*;
+
+public class Main
+{
+	public static void main(String[] args) {
+	    ReadAndWriteLock raw = new ReadAndWriteLock();
+	    Runnable task1 = new Runnable(){
+	        public void run(){
+	             for(int i = 0; i<10; i++){
+	                raw.inc(); 
+	                System.out.println(Thread.currentThread().getName() + " incremented the count by 1");
+	        }
+	        }
+	       
+	    };
+	    
+	    Runnable task2 = new Runnable(){
+	        public void run(){
+	            for(int i = 0; i<=10; i++){
+	            System.out.println(Thread.currentThread().getName() + " give the count of " + raw.getCount());
+	        }
+	        }
+	        
+	    };
+	    
+	    Thread t1 = new Thread(task1, "Thread 1");
+	    Thread t2 = new Thread(task2, "Thread 2");
+	    Thread t3 = new Thread(task2, "Thread 3");
+	    
+	    t1.start();
+	    t2.start();
+	    t3.start();
+	}
+}
+
+class ReadAndWriteLock{
+    int count = 0;
+    private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
+    private final Lock readLock = lock.readLock();
+    private final Lock writeLock = lock.writeLock();
+    
+    public void inc(){
+        writeLock.lock();
+        try{
+            count++;
+            Thread.sleep(50);
+        }catch(InterruptedException e){}
+        finally{
+            writeLock.unlock();
+        }
+    }
+    
+    public int getCount(){
+        readLock.lock();
+        try{
+            return count;
+        }finally{
+            readLock.unlock();
+        }
+    }
+}
