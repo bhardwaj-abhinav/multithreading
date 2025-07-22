@@ -1,0 +1,48 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+import java.util.concurrent.*;
+import java.util.concurrent.locks.*;
+
+public class Main
+{
+	public static void main(String[] args) {
+		FairLock fl = new FairLock();
+		Runnable task = new Runnable(){
+		    public void run(){
+		        fl.accessResource();
+		    }
+		};
+		Thread t1 = new Thread(task, "thread 1");
+		Thread t2 = new Thread(task, "thread 2");
+		Thread t3 = new Thread(task, "thread 3");
+		
+		t1.start();
+		t2.start();
+		t3.start();
+	}
+}
+
+class FairLock{
+    private final Lock fairLock = new ReentrantLock(true);
+    
+    public void accessResource(){
+        fairLock.lock();
+        try{
+            System.out.println("Lock acquired by "+ Thread.currentThread().getName());
+            Thread.sleep(2000);
+        }catch(InterruptedException e){
+            Thread.currentThread().interrupt();
+        }finally{
+            System.out.println("Lock released by "+ Thread.currentThread().getName());
+            fairLock.unlock();
+            
+        }
+    }
+    
+}
