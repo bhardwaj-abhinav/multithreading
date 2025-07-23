@@ -1,0 +1,130 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+//function -----
+//submit(runnable r) submit(callable c) submit(runnable r , returnTask)
+// shutdown() shutdownnow() isShutdown()
+//awaitTermination()
+//invokeALl()
+
+import java.util.concurrent.*;
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) throws Exception {
+	    
+	    ExecutorService service = Executors.newSingleThreadExecutor();
+	    Future<Integer> future = service.submit(() -> 42);
+	    if(future.isDone()){
+	        System.out.println("complete..."); //no print
+	    }
+	    System.out.println(future.get()); //42
+	    if(future.isDone()){
+	        System.out.println("complete..."); //complete...
+	    }
+	    service.shutdown();
+	    
+	    //Future<String> future1 = service1.submit(() -> "Hello"); ----- working fine
+	    //Runnable runable = () -> "Hello" ----gives error
+	    //Callable callable = () -> "Hello" ----working fine (if we want return something then pass callable into submit otherwise pass runnable)
+	    
+	    ExecutorService service1 = Executors.newSingleThreadExecutor();
+	    //Future<String> future1 = service1.submit(() -> System.out.println("Hello")); --- gives error use ?
+	    Future<?> future1 = service1.submit(() -> System.out.println("Hello"));
+	    future1.get();//wait until above statement completes
+	    System.out.println(future1.get()); //null
+	    service1.shutdown();
+	    
+	    ExecutorService service2 = Executors.newFixedThreadPool(2);
+	    Future<Integer> future2 = service2.submit(() -> 1+2);
+	    Integer i = future2.get();
+	    System.out.println("Sum is " + i); // Sum is 3
+	    service2.shutdown();
+	    System.out.println(service2.isShutdown()); // true
+	    System.out.println(service2.isTerminated()); // false
+	    Thread.sleep(1);
+	    System.out.println(service2.isTerminated()); //true
+	    
+	    ExecutorService service3 = Executors.newFixedThreadPool(2);
+	    Callable<Integer> callable1 = () -> {
+	        Thread.sleep(1000);
+	        System.out.println("Task 1");
+	        return 1;
+	    };
+	    
+	    Callable<Integer> callable2 = () -> {
+	        Thread.sleep(1000);
+	        System.out.println("Task 2");
+	        return 2;
+	    };
+	    
+	    Callable<Integer> callable3 = () -> {
+	        Thread.sleep(1000);
+	        System.out.println("Task 3");
+	        return 3;
+	    };
+	    
+	    List<Callable<Integer>> list = Arrays.asList(callable1, callable2, callable3);
+	    //List<Future<Integer>> future3 = service3.invokeAll(list); --- normal constructor
+	    List<Future<Integer>> future3 = service3.invokeAll(list, 1, TimeUnit.SECONDS);
+	    for(Future<Integer> f: future3){
+	        try{
+	            System.out.println(f.get());
+	        }catch(CancellationException e){}
+	        
+	    }
+	    service3.shutdown();
+	    
+	    ExecutorService service4 = Executors.newFixedThreadPool(2);
+	    Future<Integer> future4 = service4.submit(() -> {
+	        try{
+	            Thread.sleep(2000);
+	        }catch(InterruptedException e){System.out.println("Exception : " + e);}
+	        return 42;
+	    });
+	    Integer i1 = null;
+	    try{
+	        i1 = future4.get(1,TimeUnit.SECONDS);
+	        System.out.println(future4.isDone());
+	        System.out.println(i1);
+	    }catch(TimeoutException | InterruptedException | ExecutionException e){
+	        System.out.println("Execption is : " + e);
+	    }
+	    service4.shutdown();
+	    
+	    ExecutorService service5 = Executors.newFixedThreadPool(2);
+	    Future<Integer> future5 = service5.submit(() -> {
+	        try{
+	            Thread.sleep(2000);
+	        }catch(InterruptedException e){System.out.println("Exception : " + e);}
+	        System.out.println("working........");// no print
+	        return 42;
+	    });
+	    future5.cancel(true);
+	    System.out.println(future5.isCancelled()); //true
+	    System.out.println(future5.isDone());//true
+	    service5.shutdown();
+	    
+	    ExecutorService service6 = Executors.newFixedThreadPool(2);
+	    Future<Integer> future6 = service6.submit(() -> {
+	        try{
+	            Thread.sleep(2000);
+	        }catch(InterruptedException e){System.out.println("Exception : " + e);}
+	        System.out.println("working........");// no print
+	        return 42;
+	    });
+	    try{
+	        Thread.sleep(1000);
+	    }catch(InterruptedException e){System.out.println("Exception : " + e);}
+	    future6.cancel(false);
+	    System.out.println(future6.isCancelled()); //true
+	    System.out.println(future6.isDone());//true
+	    service6.shutdown();
+	    
+	}
+}
