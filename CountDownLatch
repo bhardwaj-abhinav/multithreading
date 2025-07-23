@@ -1,0 +1,53 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+import java.util.concurrent.*;
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) throws Exception {
+	    int noOfThread = 3;
+	    ExecutorService service = Executors.newFixedThreadPool(noOfThread);
+	    
+	    //In below approach we need to mention get method for all threads manullay
+	   // Future<String> future1  = service.submit(new DependentService());
+	   // Future<String> future2  = service.submit(new DependentService());
+	   // Future<String> future3  = service.submit(new DependentService());
+	   // future1.get();
+	   // future2.get();
+	   // future3.get();
+	   
+	   //To overcome above problem we will use countDownLatch
+	   CountDownLatch latch = new CountDownLatch(noOfThread);
+	    Future<String> future1  = service.submit(new DependentService(latch));
+	    Future<String> future2  = service.submit(new DependentService(latch));
+	    Future<String> future3  = service.submit(new DependentService(latch));
+	   
+	    latch.await();
+	    service.shutdown();
+	    System.out.println("Main metod continue......");
+	}
+}
+
+class DependentService implements Callable<String>{
+     private final CountDownLatch latch;
+        
+        public DependentService(CountDownLatch latch){
+            this.latch = latch;
+        }
+    public String call() throws Exception{
+        try{
+             System.out.println(Thread.currentThread().getName() + " Started....");
+            Thread.sleep(2000);
+        }finally{
+            latch.countDown();                                                                                                                                                                          
+        }
+       
+        return "ok";
+    }
+}
