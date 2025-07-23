@@ -1,0 +1,39 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+//function -----
+//submit(runnable r) submit(callable c) submit(runnable r , returnTask)
+// shutdown() shutdownnow() isShutdown()
+//awaitTermination()
+//invokeALl()
+
+import java.util.concurrent.*;
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) throws Exception {
+	   ScheduledExecutorService schdule = Executors.newScheduledThreadPool(1);
+	   schdule.schedule(() -> System.out.println("After 5 secound, we will get start..")
+	   ,5, TimeUnit.SECONDS);
+	   schdule.shutdown();
+	   System.out.println("Executing...");
+	   
+	   ScheduledExecutorService schdule1 = Executors.newScheduledThreadPool(1);
+	   schdule1.scheduleAtFixedRate(() -> System.out.println("After every 5 secound, we will get start..")
+	   ,5,5, TimeUnit.SECONDS);
+	   
+	   schdule1.scheduleWithFixedDelay(() -> System.out.println("After completing previous task, it will start with delay of 5 seconds"),
+	   5,5,TimeUnit.SECONDS);
+	   
+	   schdule1.schedule(() -> {
+	   System.out.println("Initializing shutdown....");
+	   schdule1.shutdown();
+	   }, 20, TimeUnit.SECONDS);
+	   System.out.println("Executing units...");
+	}
+}
