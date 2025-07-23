@@ -1,0 +1,50 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+import java.util.concurrent.*;
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) throws Exception {
+	    int thread = 3;
+	    CyclicBarrier barrier = new CyclicBarrier(thread, new Runnable(){
+	        public void run(){
+	            System.out.println("All systems are running and up..........");
+	        }
+	    });
+	    
+	    Thread webServerThread = new Thread(new SubSystem("web server", 2000, barrier));
+	    Thread databaseThread = new Thread(new SubSystem("database", 4000, barrier));
+	    Thread cacheThread = new Thread(new SubSystem("cache", 3000, barrier));
+	    
+	    webServerThread.start();
+	    databaseThread.start();
+	    cacheThread.start();
+	}
+}
+
+class SubSystem implements Runnable{
+    private String name;
+    private int initializingTime;
+    private CyclicBarrier barrier;
+    
+    public SubSystem(String name, int initializingTime, CyclicBarrier barrier){
+        this.name = name;
+        this.initializingTime = initializingTime;
+        this.barrier = barrier;
+    }
+    
+    public void run(){
+        try{
+            System.out.println(name + " intiliazing started...");
+            Thread.sleep(initializingTime);
+            System.out.println(name + " initializing complete...");
+            barrier.await();
+        }catch(InterruptedException | BrokenBarrierException e){e.printStackTrace();}
+    }
+} 
